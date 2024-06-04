@@ -8,7 +8,9 @@ router.post("/new-post", auth_passport, postController.newPost);
 router.post("/get-user-post", postController.getUserPost);
 router.post("/get-upvote-post", postController.getUpvotePost);
 router.post("/get-favourite-post", postController.getFavouritePost);
-router.post("/get-post", postController.getPost);
+router.get("/get-post/:id", postController.getPostById);
+router.get("/get-post", postController.getPost);
+router.get("/paginate", postController.paginatePost);
 router.post("/upvote", postController.upvote);
 router.post("/favourite", postController.favourite);
 
