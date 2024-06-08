@@ -28,17 +28,25 @@ class PostController {
 
   async paginatePost(req, res, next) {
     try {
-      const tags = req.query.tags;
-      const page = req.query.page ?? 0;
+      const page = req.query.page ?? 1;
       const limit = req.query.limit ?? 10;
-      console.log("paginate post: ", tags, page, limit);
-      const query = tags === undefined || tags.length == 0 ? {} : { tags: { $in: tags } };
-      const posts = await Post.find(query)
-        .skip(page * limit)
-        .limit(limit)
-        .populate("userId")
-        .sort({ createdAt: -1 }); // -1 for descending order, 1 for ascending order
-      res.json(posts);
+      const populate = req.query.populate ?? '';
+      const skip = (page - 1) * limit;
+      const total = await Post.countDocuments();
+      const pages = Math.ceil(total / limit);
+      console.log("Paginate post: Page:", page, ' Limit:', limit);
+      const results = await Post.find()
+        .skip(skip).limit(limit)
+        .populate(populate)
+        .sort({ createdAt: -1 });
+      res.json({
+        page: Number(page),
+        limit: Number(limit),
+        count: results.length,
+        total: total,
+        pages: pages,
+        results: results,
+      });
     } catch (err) {
       next(err);
     }
